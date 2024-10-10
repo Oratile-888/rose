@@ -1,0 +1,69 @@
+import pandas as pd
+
+# Load the data
+df = pd.read_csv('path_to_your_dataset.csv')
+import pandas as pd
+
+# Load the data
+df = pd.read_csv('path_to_your_dataset.csv')
+
+def race_count():
+    return df['race'].value_counts()
+
+def average_age_men():
+    return round(df[df['sex'] == 'Male']['age'].mean(), 1)
+
+def percentage_bachelors():
+    total_people = len(df)
+    bachelors_count = len(df[df['education'] == 'Bachelors'])
+    return round((bachelors_count / total_people) * 100, 1)
+
+def percentage_advanced_education_over_50k():
+    advanced_education = ['Bachelors', 'Masters', 'Doctorate']
+    total_people = len(df)
+    advanced_earning_over_50k = len(df[(df['education'].isin(advanced_education)) & (df['salary'] == '>50K')])
+    return round((advanced_earning_over_50k / total_people) * 100, 1)
+
+def percentage_no_advanced_education_over_50k():
+    advanced_education = ['Bachelors', 'Masters', 'Doctorate']
+    total_people = len(df)
+    non_advanced_earning_over_50k = len(df[(~df['education'].isin(advanced_education)) & (df['salary'] == '>50K')])
+    return round((non_advanced_earning_over_50k / total_people) * 100, 1)
+
+def minimum_hours_per_week():
+    return df['hours-per-week'].min()
+
+def percentage_min_hours_over_50k():
+    min_hours = minimum_hours_per_week()
+    total_min_hours = len(df[df['hours-per-week'] == min_hours])
+    min_hours_earning_over_50k = len(df[(df['hours-per-week'] == min_hours) & (df['salary'] == '>50K')])
+    return round((min_hours_earning_over_50k / total_min_hours) * 100, 1)
+
+def highest_earning_country():
+    countries = df['native-country'].unique()
+    country_over_50k_percentage = {}
+    
+    for country in countries:
+        total_people = len(df[df['native-country'] == country])
+        earners = len(df[(df['native-country'] == country) & (df['salary'] == '>50K')])
+        if total_people > 0:
+            country_over_50k_percentage[country] = (earners / total_people) * 100
+            
+    highest_country = max(country_over_50k_percentage, key=country_over_50k_percentage.get)
+    return highest_country, round(country_over_50k_percentage[highest_country], 1)
+
+def popular_occupation_india():
+    return df[(df['native-country'] == 'India') & (df['salary'] == '>50K')]['occupation'].mode()[0]from demographic_data_analyzer import *
+
+if __name__ == "__main__":
+    print("Race Count:\n", race_count())
+    print("Average Age of Men:", average_age_men())
+    print("Percentage of Bachelors:", percentage_bachelors())
+    print("Percentage of Advanced Education earning >50K:", percentage_advanced_education_over_50k())
+    print("Percentage without Advanced Education earning >50K:", percentage_no_advanced_education_over_50k())
+    print("Minimum Hours per Week:", minimum_hours_per_week())
+    print("Percentage with Minimum Hours earning >50K:", percentage_min_hours_over_50k())
+    highest_country, percentage = highest_earning_country()
+    print(f"Country with highest percentage earning >50K: {highest_country} ({percentage}%)")
+    print("Most popular occupation in India for >50K earners:", popular_occupation_india())
+
